@@ -8,38 +8,37 @@ object ReversePolishNotation {
 
   def get(tokens: List[Token]): List[Token] = {
 
-    val operators = mutable.Stack[Token]()
+    val operators = mutable.Stack[Operator]()
     val output = mutable.Queue[Token]()
 
     tokens.foreach {
       case Unknown | End => ()
       case n: Number => output += n
+      case o: Operator if o != Open => operators.push(o)
       case o: Operator =>
-        while (operators.nonEmpty &&
-          (operators.top.isInstanceOf[Operator] &&
-          operators.top.asInstanceOf[Operator].precedence >= o.precedence)) {
-
-          output += operators.pop()
+        var stop = false
+        while (operators.nonEmpty && !stop) {
+          val op2 = operators.top
+          if (o.precedence > op2.precedence) {
+            output += operators.pop().asInstanceOf[Token]
+          } else {
+            stop = true
+          }
         }
-
-        operators.push(o)
+        operators += o
 
       case Open => operators += Open
       case Close =>
-        var _break = false
-//        while (operators.nonEmpty && !_break) {
-//          val popped = operators.pop()
-//          if (popped == Open) _break = true
-//          else output += popped
-//        }
         while (operators.nonEmpty && operators.top != Open)
-          output += operators.pop()
+          output += operators.pop().asInstanceOf[Token]
         if (operators.nonEmpty && operators.top == Open)
           operators.pop()
+        if (operators.nonEmpty && operators.top != Open)
+          output += operators.pop().asInstanceOf[Token]
     }
 
     while (operators.nonEmpty)
-      output += operators.pop()
+      output += operators.pop().asInstanceOf[Token]
 
     output.toList
   }
