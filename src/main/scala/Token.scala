@@ -14,6 +14,22 @@ case object Close extends Token
 
 case class Number(value: Int) extends Token
 
+case class Identifier(name: String) extends Token
+
+case object Equals extends Token
+
+//trait HasName {
+//  val name: String
+//}
+
+//case class Variable(name: String, expr: List[Token]) extends Token with HasName {
+//
+//}
+//
+//case class Function(name: String, expr: List[Token]) extends Token with HasName {
+//
+//}
+
 case object Divide extends Token with Operator {
   override val precedence: Int = 3
 }

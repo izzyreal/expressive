@@ -1,22 +1,34 @@
 package expressive
 
+import scala.collection.mutable.ListBuffer
+
+case object Input {
+  def parse(str: String): List[Token] = {
+    val in = new Input(str)
+    val tokens = new ListBuffer[Token]
+    while (in.hasNext) {
+      val next = in.next
+      if (next != End) {
+        tokens += next
+      }
+    }
+    tokens.toList
+  }
+}
+
 class Input(val expression: String) {
 
   private var pos = -1
 
-  def hasNext: Boolean = pos < expression.length
+  private def hasNext: Boolean = pos < expression.length
 
-  // Advances the position by the number of digits found
-  private def collectContiguousDigits: String = {
-    val digits = expression.substring(pos).takeWhile { _ =>
-      val continue = pos < expression.length &&
-        expression(pos).isDigit
-      pos += 1
-      continue
-    }
-    pos -= 2
-    digits
-  }
+  private def adjacentDigits: String =
+    if (pos + 1 >= expression.length) ""
+    else expression.substring(pos + 1).takeWhile(_.isDigit)
+
+  private def adjacentLetters: String =
+    if (pos + 1 >= expression.length) ""
+    else expression.substring(pos + 1).takeWhile(_.isLetter)
 
   private def reachedEnd: Boolean =
     pos >= expression.length
@@ -35,9 +47,16 @@ class Input(val expression: String) {
         c = expression(pos)
       }
 
-      if (c.isDigit) {
-        val digits = collectContiguousDigits
-        Number(Integer.parseInt(digits))
+      if (c == '=') {
+        Equals
+      } else if (c.isLetter) {
+        val adjacent = adjacentLetters
+        pos += adjacent.length
+        Identifier(adjacent.prepended(c))
+      } else if (c.isDigit) {
+        val adjacent = adjacentDigits
+        pos += adjacent.length
+        Number(Integer.parseInt(adjacent.prepended(c)))
       } else if (c == '(') {
         Open
       } else if (c == ')') {
