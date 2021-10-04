@@ -4,8 +4,8 @@ import scala.collection.mutable
 
 object Main extends App {
 
-  val variables = new mutable.HashMap[String, Variable]
-
+  val heapVars = new mutable.HashMap[String, Variable]
+  val stackVals = new mutable.HashMap[String, Int]
 //  val functions = new ListBuffer[Function]
 
   val line1 = "x = 2"
@@ -15,14 +15,16 @@ object Main extends App {
 
   val variableDeclarations = Seq(
     line1,
-    line2,
-//    line3
+    line2
   )
 
   variableDeclarations.foreach { e =>
     val a = Variable(e)
-    variables(a.name) = a
-    println(s"${a.value}")
+    heapVars(a.name) = a
+//    println(s"${a.value}")
   }
+
+  val foo = Function(line3)
+  println(foo.value(List(Number(1))))
 
 }
