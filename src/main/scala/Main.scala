@@ -12,12 +12,12 @@ object Main extends App {
   val expr6 = "((1) + (1))"
 
   val exprs = Seq(
-//    expr1,
-//    expr2,
-//    expr3,
+    expr1,
+    expr2,
+    expr3,
     expr4,
-//    expr5,
-//    expr6
+    expr5,
+    expr6
   )
 
   exprs.foreach { e =>
@@ -25,22 +25,27 @@ object Main extends App {
 
     val tokens = new ListBuffer[Token]
 
-    println("-= Infix Notation =-")
+//    println("-= Infix Notation =-")
 
     while (in.hasNext) {
       val next = in.next
       if (next != End) {
         tokens += next
-        print(s"$next, ")
+//        print(s"$next, ")
       }
     }
-    println("")
 
-    println("-= Reverse Polish Notation =-")
-    val reversePolishNotation = ReversePolishNotation.get(tokens.toList)
-    reversePolishNotation.foreach { t => print(s"$t, ") }
-    println("")
-    println("")
+//    println("")
+//    println("")
+
+    val rpnTokens = ReversePolishNotation.get(tokens.toList)
+
+//    println("-= Reverse Polish Notation =-")
+//    rpnTokens.foreach { t => print(s"$t, ") }
+//    println("")
+//    println("")
+
+    println(s"$e = ${ReversePolishNotation.evaluate(rpnTokens)}")
   }
 
 }

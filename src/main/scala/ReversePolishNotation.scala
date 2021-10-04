@@ -42,4 +42,27 @@ object ReversePolishNotation {
 
     output.toList
   }
+
+  def evaluate(tokens: List[Token]): Int = {
+
+    val stack = mutable.Stack[Int]()
+
+    tokens.foreach {
+      case n: Number => stack.push(n.value)
+      case o: Operator =>
+        val b = stack.pop()
+        val a = stack.pop()
+
+        val res = o match {
+          case Plus => a + b
+          case Minus => a - b
+          case Multiply => a * b
+          case _ => a / b
+        }
+
+        stack.push(res)
+    }
+
+    stack.pop()
+  }
 }
