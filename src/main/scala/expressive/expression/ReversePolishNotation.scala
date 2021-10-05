@@ -1,4 +1,6 @@
-package expressive
+package expressive.expression
+
+import expressive.parser.{Close, Evaluable, Minus, Multiply, Number, Open, Operator, Plus}
 
 import scala.collection.mutable
 
@@ -6,13 +8,12 @@ import scala.collection.mutable
 // https://en.wikipedia.org/wiki/Shunting-yard_algorithm
 object ReversePolishNotation {
 
-  def get(tokens: List[Token]): List[Token] = {
+  def get(tokens: List[Evaluable]): List[Evaluable] = {
 
     val operators = mutable.Stack[Operator]()
-    val output = mutable.Queue[Token]()
+    val output = mutable.Queue[Evaluable]()
 
     tokens.foreach {
-      case Unknown | End => ()
       case n: Number => output += n
       case o: Operator if o != Open => operators.push(o)
       case o: Operator =>
@@ -20,30 +21,29 @@ object ReversePolishNotation {
         while (operators.nonEmpty && !stop) {
           val op2 = operators.top
           if (o.precedence > op2.precedence) {
-            output += operators.pop().asInstanceOf[Token]
+            output += operators.pop().asInstanceOf[Evaluable]
           } else {
             stop = true
           }
         }
-        operators += o
+        operators.push(o)
 
-      case Open => operators += Open
       case Close =>
         while (operators.nonEmpty && operators.top != Open)
-          output += operators.pop().asInstanceOf[Token]
+          output += operators.pop().asInstanceOf[Evaluable]
         if (operators.nonEmpty && operators.top == Open)
           operators.pop()
         if (operators.nonEmpty && operators.top != Open)
-          output += operators.pop().asInstanceOf[Token]
+          output += operators.pop().asInstanceOf[Evaluable]
     }
 
     while (operators.nonEmpty)
-      output += operators.pop().asInstanceOf[Token]
+      output += operators.pop().asInstanceOf[Evaluable]
 
     output.toList
   }
 
-  def evaluate(tokens: List[Token]): Int = {
+  def evaluate(tokens: List[Evaluable]): Int = {
 
     val stack = mutable.Stack[Int]()
 

@@ -1,4 +1,4 @@
-package expressive
+package expressive.parser
 
 import scala.collection.mutable.ListBuffer
 
