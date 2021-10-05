@@ -23,12 +23,8 @@ case object Expression {
   private def resolveVariable(i: Identifier): Evaluable =
     Number(Main.heapVars(i.name).value)
 
-  private def expandFunctionCall(i: Identifier, args: List[Evaluable]): List[Evaluable] = {
-    val f = Main.heapFuncs(i.name)
-    val result = f.expand(args)
-    println(s"expand result: ${result.fancyString}")
-    result
-  }
+  private def expandFunctionCall(i: Identifier, args: List[Evaluable]): List[Evaluable] =
+    Main.heapFuncs(i.name).expand(args)
 
   def resolveReferences(tokens: List[Token]): List[Evaluable] = {
     val queue = new mutable.Queue[Token]
@@ -36,34 +32,41 @@ case object Expression {
 
     val buf = new ListBuffer[Evaluable]
 
+    def collectReference(i: Identifier, nested: Boolean = false): Evaluable = {
+      queue.headOption match {
+
+        // i is the identifier of a function
+        case Some(Open) =>
+          val args = new ListBuffer[Evaluable]
+
+          while (queue.nonEmpty && queue.head != Close) {
+            queue.dequeue() match {
+              case i2: Identifier =>
+                args += collectReference(i2, nested = true)
+              case n: Number => args += n
+              case e: Evaluable => buf += e
+            }
+          }
+
+          if (nested) queue.dequeue()
+
+          buf.addAll(expandFunctionCall(i, args.toList))
+          Close
+
+        // i is the identifier of a variable
+        case _ => resolveVariable(i)
+      }
+    }
+
     while (queue.nonEmpty) {
       val t = queue.dequeue()
       t match {
         case e: Evaluable => buf += e
         case i: Identifier =>
-          queue.headOption match {
-
-            // i is an identifier of a function
-            case Some(Open) =>
-              buf += Open
-              val args = new ListBuffer[Evaluable]
-
-              while (queue.nonEmpty && queue.head != Close) {
-                queue.dequeue() match {
-                  case i: Identifier => args += resolveVariable(i)
-                  case n: Number => args += n
-                  case _ => ()
-                }
-              }
-
-              buf.addAll(expandFunctionCall(i, args.toList))
-
-            // i is an identifier of a variable
-            case _ => buf += resolveVariable(i)
-          }
+          val res = collectReference(i)
+          if (res != Close) buf += res
       }
     }
-
     buf.toList
   }
 
