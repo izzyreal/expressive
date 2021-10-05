@@ -25,6 +25,12 @@ object Main extends App {
   }
 
   val foo = Function(line3)
-  println(foo.value(List(Number(1))))
+  println(s"$foo = ${foo.value(List(Number(1)))}")
+
+  val bigFun = Function("bar(a, b, c) = a + b + c")
+  println(s"$bigFun")
+
+  val exp = Expression(Input.parse(line4))
+  println(exp)
 
 }

@@ -1,12 +1,6 @@
 package expressive
 
-import java.security.Policy.Parameters
-
-//case class Expression(expr: String) {
-//  def evaluate: Int = {
-//    ReversePolishNotation.evaluate(Input.parse(expr))
-//  }
-//}
+import implicits.TokenList
 
 case class Expression(tokens: List[Token]) {
 
@@ -15,7 +9,7 @@ case class Expression(tokens: List[Token]) {
       case i: Identifier =>
         Number {
           Main.stackVals.getOrElse(i.name,
-          Main.heapVars(i.name).value)
+            Main.heapVars(i.name).value)
         }
       case other => other
     }
@@ -25,6 +19,8 @@ case class Expression(tokens: List[Token]) {
     val rpn = ReversePolishNotation.get(resolved)
     ReversePolishNotation.evaluate(rpn)
   }
+
+  override def toString: String = tokens.fancyString
 }
 
 case class Variable(declaration: String) {
@@ -33,14 +29,14 @@ case class Variable(declaration: String) {
   private val leftHand = tokens.takeWhile(_ != Equals).head
   private val rightHand = tokens.dropWhile(_ != Equals).drop(1)
 
-  println(s"Var: $name = $rightHand")
-
   def name: String =
     leftHand.asInstanceOf[Identifier].name
 
   def value: Int = {
     Expression(rightHand).evaluate
   }
+
+  override def toString: String = s"$name = ${rightHand.fancyString}"
 }
 
 case class Function(declaration: String) {
@@ -48,8 +44,6 @@ case class Function(declaration: String) {
   private val tokens = Input.parse(declaration)
   private val leftHand = tokens.takeWhile(_ != Equals)
   private val rightHand = tokens.dropWhile(_ != Equals).drop(1)
-
-  println(s"Var: $name = $rightHand")
 
   def name: String =
     leftHand.head.asInstanceOf[Identifier].name
@@ -73,4 +67,11 @@ case class Function(declaration: String) {
     Main.stackVals.clear()
     res
   }
+
+  def arguments: List[Token] =
+    leftHand.dropWhile(_.isInstanceOf[Identifier])
+      .dropWhile(_ == Open)
+      .takeWhile(_.isInstanceOf[Identifier])
+
+  override def toString: String = s"$name(${arguments.fancyString}) = ${rightHand.fancyString}"
 }

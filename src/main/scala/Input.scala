@@ -42,7 +42,7 @@ class Input(val expression: String) {
     } else {
       var c = expression(pos)
 
-      while (c == ' ') {
+      while (c == ' ' || c == ',') {
         pos += 1
         c = expression(pos)
       }
