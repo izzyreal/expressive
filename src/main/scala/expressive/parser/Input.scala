@@ -52,7 +52,7 @@ class Input(val expression: String) {
       } else if (c.isLetter) {
         val adjacent = adjacentLetters
         pos += adjacent.length
-        Identifier(adjacent.prepended(c))
+        Identifier(adjacent.prepended(c), negative = false)
       } else if (c.isDigit) {
         val adjacent = adjacentDigits
         pos += adjacent.length
@@ -68,7 +68,20 @@ class Input(val expression: String) {
       } else if (c == '+') {
         Plus
       } else if (c == '-') {
-        Minus
+        if (pos + 1 < expression.length) {
+          val c2 = expression(pos + 1)
+          if (c2.isDigit) {
+            pos += 1
+            val adjacent = adjacentDigits
+            pos += adjacent.length
+            Number(-1 * Integer.parseInt(adjacent.prepended(c2)))
+          } else if (c2.isLetter) {
+            pos += 1
+            val adjacent = adjacentLetters
+            pos += adjacent.length
+            Identifier(adjacent.prepended(c2), negative = true)
+          } else Minus
+        } else Minus
       } else {
         Unknown
       }

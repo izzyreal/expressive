@@ -10,13 +10,12 @@ object Main extends App {
 
   val heapVars = new mutable.HashMap[String, Variable]
   val heapFuncs = new mutable.HashMap[String, expression.Function]
-  val stackVals = new mutable.HashMap[String, Int]
 
   val line1 = "x = 2"
   val line2 = "y = x * 3"
   val line3 = "foo(a) = a * x * y"
   val line4 = "x * (y + foo(3)) / 2" // 42
-  val line5 = "bar(a) = a * 4"
+  val line5 = "bar(a) = a * -4"
   val line6 = "x * (y + bar(foo(bar(foo(3))))) / 2" // 42
 
   val variableDeclarations = Seq(

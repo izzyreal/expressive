@@ -2,7 +2,7 @@ package expressive.expression
 
 import expressive.Main
 import expressive.implicits.TokenList
-import expressive.parser.{Close, Evaluable, Identifier, Number, Open, Token}
+import expressive.parser.{Close, Evaluable, Identifier, Multiply, Number, Open, Token}
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
@@ -20,7 +20,7 @@ case class Expression(tokens: List[Token]) {
 
 case object Expression {
 
-  private def resolveVariable(i: Identifier): Evaluable =
+  private def resolveVariable(i: Identifier): Number =
     Number(Main.heapVars(i.name).value)
 
   private def expandFunctionCall(i: Identifier, args: List[Evaluable]): List[Evaluable] =
@@ -50,11 +50,21 @@ case object Expression {
 
           if (nested) queue.dequeue()
 
-          buf.addAll(expandFunctionCall(i, args.toList))
+          val expandedFunctionCall = expandFunctionCall(i, args.toList)
+
+          val prependNegative = if (i.negative) {
+            List(Open)
+          } else List.empty
+
+          val appendNegative = if (i.negative) {
+            List(Close, Multiply, Number(-1))
+          } else List.empty
+
+          buf.addAll(prependNegative ++ expandedFunctionCall ++ appendNegative)
           Close
 
         // i is the identifier of a variable
-        case _ => resolveVariable(i)
+        case _ => Number(resolveVariable(i).value * (if (i.negative) -1 else 1))
       }
     }
 

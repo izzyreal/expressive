@@ -32,7 +32,7 @@ case object Minus extends Evaluable with Operator {
   override val precedence: Int = 2
 }
 
-case class Identifier(name: String) extends Token
+case class Identifier(name: String, negative: Boolean) extends Token
 
 case object Equals extends Token
 

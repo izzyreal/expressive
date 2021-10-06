@@ -12,7 +12,7 @@ package object expressive {
           case Multiply => " * "
           case Divide => " / "
           case n: Number => n.value.toString
-          case i: Identifier => i.name
+          case i: Identifier => (if (i.negative) "-" else "") + i.name
           case Equals => " = "
           case _ => ""
         }.mkString
