@@ -1,11 +1,10 @@
 package expressive.expression
 
 import expressive.implicits.TokenList
-import expressive.parser.{Equals, Identifier, Input}
+import expressive.parser.{Equals, Identifier, Token}
 
-case class Variable(declaration: String) {
+case class Variable(val tokens: List[Token]) {
 
-  private val tokens = Input.parse(declaration)
   private val leftHand = tokens.takeWhile(_ != Equals).head
   private val rightHand = tokens.dropWhile(_ != Equals).drop(1)
 
