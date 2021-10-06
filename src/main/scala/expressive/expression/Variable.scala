@@ -12,7 +12,7 @@ case class Variable(declaration: String) {
   def name: String =
     leftHand.asInstanceOf[Identifier].name
 
-  def value: Int = {
+  def value: Double = {
     Expression(rightHand).evaluate
   }
 

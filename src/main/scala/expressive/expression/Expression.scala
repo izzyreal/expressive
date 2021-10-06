@@ -10,7 +10,7 @@ import scala.collection.mutable.ListBuffer
 case class Expression(tokens: List[Token]) {
   private lazy val resolved = Expression.resolveReferences(tokens)
 
-  def evaluate: Int = {
+  def evaluate: Double = {
     val rpn = ReversePolishNotation.get(resolved)
     ReversePolishNotation.evaluate(rpn)
   }

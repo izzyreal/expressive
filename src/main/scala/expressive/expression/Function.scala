@@ -4,8 +4,6 @@ import expressive.Main
 import expressive.implicits.TokenList
 import expressive.parser._
 
-import scala.collection.mutable
-
 case class Function(declaration: String) {
 
   private val tokens = Input.parse(declaration)
@@ -15,23 +13,27 @@ case class Function(declaration: String) {
   def name: String =
     leftHand.head.asInstanceOf[Identifier].name
 
-  def arguments: List[Token] =
+  def parameters: List[Identifier] =
     leftHand.dropWhile(_.isInstanceOf[Identifier])
       .dropWhile(_ == Open)
-      .takeWhile(_.isInstanceOf[Identifier])
+      .takeWhile(_.isInstanceOf[Identifier]).collect { case i: Identifier => i }
 
   def expand(args: List[Evaluable]): List[Evaluable] = {
-    val argsQueue = new mutable.Queue[Evaluable]
-    args.foreach(argsQueue += _)
+    val paramMap = parameters.zip(args).map(a => a._1.name -> a._2).toMap
 
     rightHand.map {
       case i: Identifier =>
-        if (leftHand.contains(i))
-          argsQueue.dequeue()
-        else Number(Main.heapVars(i.name).value)
+        paramMap.getOrElse(i.name,
+          Number(Main.heapVars(i.name).value)
+        )
       case e: Evaluable => e
     }
   }
 
-  override def toString: String = s"$name(${arguments.fancyString}) = ${rightHand.fancyString}"
+  override def toString: String = s"$name(${
+    parameters.collect {
+      case i: Identifier => i.name
+      case n: Number => n.value.toString
+    }.mkString("", ", ", "")
+  }) = ${rightHand.fancyString}"
 }

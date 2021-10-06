@@ -11,41 +11,36 @@ object Main extends App {
   val heapVars = new mutable.HashMap[String, Variable]
   val heapFuncs = new mutable.HashMap[String, expression.Function]
 
-  val line1 = "x = 2"
-  val line2 = "y = x * 3"
-  val line3 = "foo(a) = a * x * y"
-  val line4 = "x * (y + foo(3)) / 2" // 42
-  val line5 = "bar(a) = a * -4"
-  val line6 = "x * (y + bar(foo(bar(foo(3))))) / 2" // 42
+  declareVar("x = 2")
+  declareVar("y = x * 3")
+  declareFun("foo(a) = a * x * y")
+  evaluateExpression("x * (y + foo(3)) / 2") // 42.0
+  declareFun("bar(a) = a * -4")
+  evaluateExpression("x * (y + bar(foo(bar(foo(3))))) / 2") // 6918.0
+  declareVar("x  = 1 + 2.5 * 4")
+  declareVar("y = x * 3 + x")
+  evaluateExpression("x + y - 2")
+  declareFun("foo(a, b) = (a + b) / b")
+  declareFun("bar(c) = -c")
+  evaluateExpression("foo(1, 2) + bar(3.5) + 1")
 
-  val variableDeclarations = Seq(
-    line1,
-    line2
-  )
-
-  variableDeclarations.foreach { declaration =>
-    val a = Variable(declaration)
+  def declareVar(line: String): Unit = {
+    val a = Variable(line)
     heapVars(a.name) = a
-    //    println(s"${a.value}")
+    println(a)
   }
 
-  val functionDeclarations = Seq(
-    line3,
-    line5
-  )
-
-  functionDeclarations.foreach { declaration =>
-    val f = expression.Function(declaration)
+  def declareFun(line: String): Unit = {
+    val f = expression.Function(line)
     heapFuncs(f.name) = f
     println(s"$f")
   }
 
-  val expressions = Seq(line4, line6)
-
-  expressions.foreach { expression =>
-    val tokens = Input.parse(expression)
+  def evaluateExpression(line: String): Unit = {
+    val tokens = Input.parse(line)
     println(s"Input tokens: ${tokens.fancyString}")
     val expr = Expression(tokens)
-    println(s"${expr} = ${expr.evaluate}")
+    println(s"$expr = ${expr.evaluate}")
   }
+
 }

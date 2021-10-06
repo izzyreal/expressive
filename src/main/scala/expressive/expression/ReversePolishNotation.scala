@@ -43,9 +43,9 @@ object ReversePolishNotation {
     output.toList
   }
 
-  def evaluate(tokens: List[Evaluable]): Int = {
+  def evaluate(tokens: List[Evaluable]): Double = {
 
-    val stack = mutable.Stack[Int]()
+    val stack = mutable.Stack[Double]()
 
     tokens.foreach {
       case n: Number => stack.push(n.value)

@@ -24,7 +24,7 @@ class Input(val expression: String) {
 
   private def adjacentDigits: String =
     if (pos + 1 >= expression.length) ""
-    else expression.substring(pos + 1).takeWhile(_.isDigit)
+    else expression.substring(pos + 1).takeWhile(c => c.isDigit || c == '.')
 
   private def adjacentLetters: String =
     if (pos + 1 >= expression.length) ""
@@ -56,7 +56,7 @@ class Input(val expression: String) {
       } else if (c.isDigit) {
         val adjacent = adjacentDigits
         pos += adjacent.length
-        Number(Integer.parseInt(adjacent.prepended(c)))
+        Number(adjacent.prepended(c).toDouble)
       } else if (c == '(') {
         Open
       } else if (c == ')') {
@@ -74,7 +74,7 @@ class Input(val expression: String) {
             pos += 1
             val adjacent = adjacentDigits
             pos += adjacent.length
-            Number(-1 * Integer.parseInt(adjacent.prepended(c2)))
+            Number(-1 * adjacent.prepended(c2).toDouble)
           } else if (c2.isLetter) {
             pos += 1
             val adjacent = adjacentLetters
