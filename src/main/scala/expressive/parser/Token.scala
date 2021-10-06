@@ -14,7 +14,9 @@ case object Open extends Evaluable with Operator {
 
 case object Close extends Evaluable
 
-case class Number(value: Double) extends Evaluable
+case class Number(value: Double) extends Evaluable {
+  def negated(shouldNegate: Boolean): Number = Number(if (shouldNegate) -value else value)
+}
 
 case object Divide extends Evaluable with Operator {
   override val precedence: Int = 3

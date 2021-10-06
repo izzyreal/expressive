@@ -64,7 +64,7 @@ case object Expression {
           Close
 
         // i is the identifier of a variable
-        case _ => Number(resolveVariable(i).value * (if (i.negative) -1 else 1))
+        case _ => resolveVariable(i).negated(shouldNegate = i.negative)
       }
     }
 

@@ -23,9 +23,16 @@ case class Function(declaration: String) {
 
     rightHand.map {
       case i: Identifier =>
-        paramMap.getOrElse(i.name,
-          Number(Main.heapVars(i.name).value)
-        )
+        // An identifier either refers to an argument
+        // that is conveniently stored in a map so
+        // it can be referred to multiple times...
+        val fromMap = paramMap.get(i.name).collect {
+          case n: Number => n.negated(shouldNegate = i.negative)
+          case e => e
+        }
+        // ...or it refers to a variable that is declared
+        // on the heap.
+        fromMap.getOrElse(Number(Main.heapVars(i.name).value).negated(shouldNegate = i.negative))
       case e: Evaluable => e
     }
   }
