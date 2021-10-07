@@ -2,7 +2,7 @@ package expressive.parser
 
 import scala.collection.mutable.ListBuffer
 
-case object Input {
+object Input {
   def parse(str: String): List[Token] = {
     val in = new Input(str)
     val tokens = new ListBuffer[Token]
@@ -17,7 +17,6 @@ case object Input {
 }
 
 class Input(val expression: String) {
-
   private var pos = -1
 
   private def hasNext: Boolean = pos < expression.length

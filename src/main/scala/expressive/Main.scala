@@ -59,9 +59,8 @@ object Main extends App {
 
     val closesAfterArguments = tokens.contains(Close)
     val hasEquals = tokens.contains(Equals)
-    val hasBody = tokens.dropWhile(_ != Equals).nonEmpty
 
-    startsWithIdentifier && opensAfterIdentifier && closesAfterArguments && hasEquals && hasBody
+    startsWithIdentifier && opensAfterIdentifier && closesAfterArguments && hasEquals
   }
 
   def declareVar(tokens: List[Token]): Unit = {
