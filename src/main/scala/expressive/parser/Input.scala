@@ -64,7 +64,7 @@ class Input(val expression: String) {
           val adjacent = adjacentLetters
           pos += adjacent.length
           val candidate = adjacent.prepended(c)
-          if (isLatin(candidate)) Identifier(candidate, negative = false)
+          if (isLatin(candidate)) Identifier(candidate, negated = false)
           else Unknown
         } else if (c.isDigit) {
           val adjacent = adjacentDigits
@@ -93,7 +93,7 @@ class Input(val expression: String) {
               val adjacent = adjacentLetters
               pos += adjacent.length
               val candidate = adjacent.prepended(c2)
-              if (isLatin(candidate)) Identifier(candidate, negative = true)
+              if (isLatin(candidate)) Identifier(candidate, negated = true)
               else Unknown
             } else Minus
           } else Minus

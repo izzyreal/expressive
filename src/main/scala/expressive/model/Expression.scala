@@ -75,23 +75,23 @@ case object Expression {
                   s"${expandedFunctionCall.collect { case Left(e) => e }.mkString("", ", ", "")}")
               } else {
 
-                val prependNegative = if (i.negative) {
+                val prependNegation = if (i.negated) {
                   List(Open)
                 } else List.empty
 
-                val appendNegative = if (i.negative) {
+                val appendNegation = if (i.negated) {
                   List(Close, Multiply, Number(-1))
                 } else List.empty
 
-                buf.addAll(prependNegative ++ expandedFunctionCall.collect {
+                buf.addAll(prependNegation ++ expandedFunctionCall.collect {
                   case Right(evaluable) => evaluable
-                } ++ appendNegative)
+                } ++ appendNegation)
                 Right(Close)
               }
           }
 
         // i is the identifier of a variable
-        case _ => resolveVariable(i).map(_.negated(shouldNegate = i.negative))
+        case _ => resolveVariable(i).map(_.negated(shouldNegate = i.negated))
       }
     }
 

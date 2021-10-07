@@ -32,14 +32,14 @@ case class Function(tokens: List[Token]) {
           // that is conveniently stored in a map so
           // it can be referred to multiple times...
           val fromMap = paramMap.get(i.name).collect {
-            case n: Number => n.negated(shouldNegate = i.negative)
+            case n: Number => n.negated(shouldNegate = i.negated)
             case e => e
           }
           // ...or it refers to a variable that is declared
           // on the heap.
           fromMap match {
             case Some(argVar) => Right(argVar)
-            case None => heapVars(i.name).value.map(Number).map(_.negated(shouldNegate = i.negative))
+            case None => heapVars(i.name).value.map(Number).map(_.negated(shouldNegate = i.negated))
           }
         case e: Evaluable => Right(e)
         case t: Token => Left(s"Function body contains unexpected token $t")

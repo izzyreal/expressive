@@ -29,7 +29,7 @@ package object expressive {
               }
 
             case i: Identifier =>
-              val res2 = (if (i.negative) "-" else "") + i.name
+              val res2 = (if (i.negated) "-" else "") + i.name
               if (previous.isInstanceOf[Number] || previous.isInstanceOf[Identifier]) s", $res2" else res2
 
             case _ => ""
