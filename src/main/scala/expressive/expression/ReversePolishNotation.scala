@@ -15,26 +15,19 @@ object ReversePolishNotation {
 
     tokens.foreach {
       case n: Number => output += n
-      case o: Operator if o != Open => operators.push(o)
-      case o: Operator =>
-        var stop = false
-        while (operators.nonEmpty && !stop) {
-          val op2 = operators.top
-          if (o.precedence > op2.precedence) {
+      case o: Operator if o != Open =>
+        if (operators.nonEmpty && operators.top != Open) {
+          if (o.precedence <= operators.top.precedence) {
             output += operators.pop().asInstanceOf[Evaluable]
-          } else {
-            stop = true
           }
         }
         operators.push(o)
-
+      case Open => operators.push(Open)
       case Close =>
         while (operators.nonEmpty && operators.top != Open)
           output += operators.pop().asInstanceOf[Evaluable]
         if (operators.nonEmpty && operators.top == Open)
           operators.pop()
-        if (operators.nonEmpty && operators.top != Open)
-          output += operators.pop().asInstanceOf[Evaluable]
     }
 
     while (operators.nonEmpty)

@@ -1,17 +1,16 @@
 package expressive
 
 import expressive.expression.{Expression, Variable}
-import expressive.implicits.TokenList
-import expressive.parser.{Equals, Identifier, Input, Open, Token, Unknown}
+import expressive.parser._
 
 import scala.collection.mutable
 
 object Main extends App {
 
-  //  test()
-
   val heapVars = new mutable.HashMap[String, Variable]
   val heapFuncs = new mutable.HashMap[String, expression.Function]
+
+//  test()
 
   println("Welcome to Expressive 1.0")
   println("Type in expressions for evaluation.\n")
@@ -49,7 +48,7 @@ object Main extends App {
 
   def evaluateExpression(line: String): Unit = {
     val tokens = Input.parse(line)
-//    println(s"Input tokens: ${tokens.fancyString}")
+    //    println(s"Input tokens: ${tokens.fancyString}")
     val expr = Expression(tokens)
     println(s"$expr = ${expr.evaluate}")
   }
@@ -62,7 +61,7 @@ object Main extends App {
     declareFun("bar(a) = a * -4")
     evaluateExpression("x * (y + bar(foo(bar(foo(3))))) / 2") // 6918.0
     declareVar(Input.parse("x  = 1 + 2.5 * 4"))
-    declareVar(Input.parse("y = x * 3 + x"))
+    declareVar(Input.parse("y = x * 2 + x"))
     evaluateExpression("x + y - 2")
     declareFun("foo(a, b) = (a + b) / b")
     declareFun("bar(c) = -c")
