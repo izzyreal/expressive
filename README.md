@@ -12,7 +12,7 @@ expressive> |
 Type `exit` and press enter to exit the application.
 
 ### Running the test
-Use `sbt "runMain expressive.Test` to perform some basic checks.
+Use `sbt "runMain expressive.Test"` to perform some basic checks.
 
 ### Bonus feature
 Nested function calls are supported.
