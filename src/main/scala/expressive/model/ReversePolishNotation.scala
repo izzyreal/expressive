@@ -1,8 +1,9 @@
-package expressive.expression
+package expressive.model
 
 import expressive.parser.{Close, Evaluable, Minus, Multiply, Number, Open, Operator, Plus}
 
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 // Shunting-yard algorithm
 // https://en.wikipedia.org/wiki/Shunting-yard_algorithm
@@ -28,6 +29,7 @@ object ReversePolishNotation {
           output += operators.pop().asInstanceOf[Evaluable]
         if (operators.nonEmpty && operators.top == Open)
           operators.pop()
+      case _ => () // Would be nice to return a Left here
     }
 
     while (operators.nonEmpty)
@@ -39,13 +41,13 @@ object ReversePolishNotation {
   def evaluate(tokens: List[Evaluable]): Either[String, Double] = {
 
     val stack = mutable.Stack[Double]()
-    var emptyStackError: Either[String, Double] = Right(0)
+    val evaluationErrors = ListBuffer[String]()
 
     tokens.foreach {
       case n: Number => stack.push(n.value)
       case o: Operator =>
         if (stack.size < 2) {
-          emptyStackError = Left(s"Insufficient operands provided for $o operator")
+          evaluationErrors += s"Insufficient operands provided for $o operator"
         } else {
           val b = stack.pop()
           val a = stack.pop()
@@ -58,10 +60,12 @@ object ReversePolishNotation {
           }
           stack.push(res)
         }
+      case e: Evaluable =>
+        evaluationErrors += s"Unexpected evaluable token $e encountered"
     }
 
-    if (emptyStackError.isLeft) {
-      emptyStackError
+    if (evaluationErrors.nonEmpty) {
+      Left(evaluationErrors.mkString("", ", ", ""))
     } else {
       Right(stack.pop())
     }

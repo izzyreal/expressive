@@ -1,19 +1,20 @@
 package expressive
 
-import expressive.expression.{Expression, Variable}
+import expressive.Memory.{heapFuncs, heapVars}
+import expressive.model.{Expression, Variable}
 import expressive.implicits.TokenList
 import expressive.parser._
 
 import scala.collection.mutable
 
+object Memory {
+  val heapVars = new mutable.HashMap[String, Variable]
+  val heapFuncs = new mutable.HashMap[String, model.Function]
+}
+
 object Main extends App {
 
-  val heapVars = new mutable.HashMap[String, Variable]
-  val heapFuncs = new mutable.HashMap[String, expression.Function]
-
-//  test()
-
-  println("Welcome to Expressive 1.0")
+  println(s"Welcome to Expressive 1.0")
   println("Type in expressions for evaluation.\n")
 
   var in = ""
@@ -25,8 +26,8 @@ object Main extends App {
     val tokens = Input.parse(in)
 
     if (tokens.count(_ == Open) != tokens.count(_ == Close)) {
-      println("Non-matching parentheses found")
-    } else {
+      println(" Non-matching parentheses found")
+    } else if (in != "exit") {
 
       val t1 = tokens.headOption
       val t2 = tokens.drop(1).headOption
@@ -41,10 +42,11 @@ object Main extends App {
         case _ => evaluateExpression(tokens)
       }
     }
-
   } while (in != "exit")
 
-  def isFunctionDeclaration(tokens: List[Token]): Boolean = {
+  println(" Bye!")
+
+  private def isFunctionDeclaration(tokens: List[Token]): Boolean = {
     val startsWithIdentifier = tokens.headOption match {
       case Some(_: Identifier) => true
       case _ => false
@@ -64,21 +66,21 @@ object Main extends App {
 
   def declareVar(tokens: List[Token]): Unit = {
     if (tokens.length < 3) {
-      println(s"Invalid variable declaration: ${tokens.fancyString}")
+      println(s" Invalid variable declaration: ${tokens.fancyString}")
     } else {
       val a = Variable(tokens)
       heapVars(a.name) = a
-      println(s"Variable declared: $a")
+      println(s" Variable defined: $a")
     }
   }
 
   def declareFun(tokens: List[Token]): Unit = {
-    val f = expression.Function(tokens)
+    val f = model.Function(tokens)
     if (!f.isValid) {
-      println(s"Invalid function declaration: ${tokens.fancyString}")
+      println(s" Invalid function declaration: ${tokens.fancyString}")
     } else {
       heapFuncs(f.name) = f
-      println(s"Function declared: $f")
+      println(s" Function defined: $f")
     }
   }
 
@@ -86,23 +88,8 @@ object Main extends App {
     val expr = Expression(tokens)
 
     expr.evaluate match {
-      case Left(e) => println(s"Could not evaluate ${tokens.fancyString}: $e")
-      case Right(result) => println(s"$expr = $result")
+      case Left(e) => println(s" Could not evaluate ${tokens.fancyString}: $e")
+      case Right(result) => println(s" $expr = $result")
     }
-  }
-
-  def test(): Unit = {
-    declareVar(Input.parse("x = 2"))
-    declareVar(Input.parse("y = x * 3"))
-    declareFun(Input.parse("foo(a) = a * x * y"))
-    evaluateExpression(Input.parse("x * (y + foo(3)) / 2")) // 42.0
-    declareFun(Input.parse("bar(a) = a * -4"))
-    evaluateExpression(Input.parse("x * (y + bar(foo(bar(foo(3))))) / 2")) // 6918.0
-    declareVar(Input.parse("x  = 1 + 2.5 * 4"))
-    declareVar(Input.parse("y = x * 2 + x"))
-    evaluateExpression(Input.parse("x + y - 2"))
-    declareFun(Input.parse("foo(a, b) = (a + b) / b"))
-    declareFun(Input.parse("bar(c) = -c"))
-    evaluateExpression(Input.parse("foo(1, 2) + bar(3.5) + 1"))
   }
 }

@@ -1,35 +1,45 @@
 import expressive.parser.{Close, Divide, Equals, Identifier, Minus, Multiply, Number, Open, Plus, Token, Unknown}
 
 package object expressive {
+
   object implicits {
+
     implicit class TokenList(tokens: List[Token]) {
 
       def fancyString: String = {
         var previous: Token = Unknown
-        var res = ""
+        var endResult = ""
 
         tokens.indices foreach { i =>
-          val res1 = tokens(i) match {
+          val tokenString = tokens(i) match {
             case Open => "("
             case Close => ")"
             case Plus => " + "
             case Minus => " - "
             case Multiply => " * "
             case Divide => " / "
+            case Equals => " = "
+
             case n: Number =>
-              val res2 = n.value.toString
-              if (previous.isInstanceOf[Number] || previous.isInstanceOf[Identifier]) s", $res2" else res2
+              val numberString = n.value.toString
+              if (previous.isInstanceOf[Number] || previous.isInstanceOf[Identifier]) {
+                s", $numberString"
+              } else {
+                numberString
+              }
+
             case i: Identifier =>
               val res2 = (if (i.negative) "-" else "") + i.name
               if (previous.isInstanceOf[Number] || previous.isInstanceOf[Identifier]) s", $res2" else res2
-            case Equals => " = "
+
             case _ => ""
           }
 
-          res += res1
+          endResult += tokenString
           previous = tokens(i)
         }
-        res
+
+        endResult
       }
 
     }

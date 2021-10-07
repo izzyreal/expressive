@@ -1,6 +1,6 @@
-package expressive.expression
+package expressive.model
 
-import expressive.Main
+import expressive.Memory.{heapFuncs, heapVars}
 import expressive.implicits.TokenList
 import expressive.parser.{Close, Evaluable, Identifier, Multiply, Number, Open, Token}
 
@@ -25,13 +25,13 @@ case class Expression(tokens: List[Token]) {
 case object Expression {
 
   private def resolveVariable(i: Identifier): Either[String, Number] =
-    Main.heapVars.get(i.name) match {
+    heapVars.get(i.name) match {
       case Some(heapVar) => heapVar.value.map(Number)
       case None => Left(s"Variable ${i.name} has not been declared")
     }
 
   private def expandFunctionCall(i: Identifier, args: List[Evaluable]): List[Either[String, Evaluable]] = {
-    Main.heapFuncs.get(i.name) match {
+    heapFuncs.get(i.name) match {
       case Some(heapFunc) => heapFunc.expand(args)
       case None => List(Left(s"Function ${i.name} has not been declared"))
     }
@@ -60,6 +60,7 @@ case object Expression {
                 }
               case n: Number => args += n
               case e: Evaluable => buf += e
+              case _ => ()
             }
           }
 
@@ -105,6 +106,7 @@ case object Expression {
             case Left(e) => error = Left(e)
             case Right(res) => if (res != Close) buf += res
           }
+        case _ => ()
       }
     }
 

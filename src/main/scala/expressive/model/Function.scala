@@ -1,6 +1,6 @@
-package expressive.expression
+package expressive.model
 
-import expressive.Main
+import expressive.Memory.heapVars
 import expressive.implicits.TokenList
 import expressive.parser._
 
@@ -39,9 +39,10 @@ case class Function(tokens: List[Token]) {
           // on the heap.
           fromMap match {
             case Some(argVar) => Right(argVar)
-            case None => Main.heapVars(i.name).value.map(Number).map(_.negated(shouldNegate = i.negative))
+            case None => heapVars(i.name).value.map(Number).map(_.negated(shouldNegate = i.negative))
           }
         case e: Evaluable => Right(e)
+        case t: Token => Left(s"Function body contains unexpected token $t")
       }
     }
   }
@@ -49,7 +50,6 @@ case class Function(tokens: List[Token]) {
   override def toString: String = s"$name(${
     parameters.collect {
       case i: Identifier => i.name
-      case n: Number => n.value.toString
     }.mkString("", ", ", "")
   }) = ${rightHand.fancyString}"
 }
