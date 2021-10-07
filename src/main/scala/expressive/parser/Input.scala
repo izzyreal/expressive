@@ -30,8 +30,10 @@ class Input(val expression: String) {
     if (pos + 1 >= expression.length) ""
     else expression.substring(pos + 1).takeWhile(_.isLetter)
 
-  private def reachedEnd: Boolean =
-    pos >= expression.length
+  private def reachedEnd: Boolean = pos >= expression.length
+
+  private def isLatin(str: String): Boolean =
+    str.toList.forall(c => ( c >= 'A' && c<= 'Z') || (c >= 'a' && c <= 'z') )
 
   def next: Token = {
 
@@ -61,7 +63,9 @@ class Input(val expression: String) {
         } else if (c.isLetter) {
           val adjacent = adjacentLetters
           pos += adjacent.length
-          Identifier(adjacent.prepended(c), negative = false)
+          val candidate = adjacent.prepended(c)
+          if (isLatin(candidate)) Identifier(candidate, negative = false)
+          else Unknown
         } else if (c.isDigit) {
           val adjacent = adjacentDigits
           pos += adjacent.length
@@ -88,7 +92,9 @@ class Input(val expression: String) {
               pos += 1
               val adjacent = adjacentLetters
               pos += adjacent.length
-              Identifier(adjacent.prepended(c2), negative = true)
+              val candidate = adjacent.prepended(c2)
+              if (isLatin(candidate)) Identifier(candidate, negative = true)
+              else Unknown
             } else Minus
           } else Minus
         } else {
