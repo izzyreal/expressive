@@ -44,7 +44,7 @@ class Input(val expression: String) {
 
       var end = false
 
-      while (c == ' ' || c == ',' && !end) {
+      while ((c == ' ' || c == ',') && !end) {
         if (pos + 1 >= expression.length) {
           end = true
         } else {

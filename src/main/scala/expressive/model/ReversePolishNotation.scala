@@ -67,7 +67,11 @@ object ReversePolishNotation {
     if (evaluationErrors.nonEmpty) {
       Left(evaluationErrors.mkString("", ", ", ""))
     } else {
-      Right(stack.pop())
+      if (stack.isEmpty) {
+        Left("Unknown input")
+      } else {
+        Right(stack.pop())
+      }
     }
   }
 }
