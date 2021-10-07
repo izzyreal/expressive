@@ -36,26 +36,34 @@ object ReversePolishNotation {
     output.toList
   }
 
-  def evaluate(tokens: List[Evaluable]): Double = {
+  def evaluate(tokens: List[Evaluable]): Either[String, Double] = {
 
     val stack = mutable.Stack[Double]()
+    var emptyStackError: Either[String, Double] = Right(0)
 
     tokens.foreach {
       case n: Number => stack.push(n.value)
       case o: Operator =>
-        val b = stack.pop()
-        val a = stack.pop()
+        if (stack.size < 2) {
+          emptyStackError = Left(s"Insufficient operands provided for $o operator")
+        } else {
+          val b = stack.pop()
+          val a = stack.pop()
 
-        val res = o match {
-          case Plus => a + b
-          case Minus => a - b
-          case Multiply => a * b
-          case _ => a / b
+          val res = o match {
+            case Plus => a + b
+            case Minus => a - b
+            case Multiply => a * b
+            case _ => a / b
+          }
+          stack.push(res)
         }
-
-        stack.push(res)
     }
 
-    stack.pop()
+    if (emptyStackError.isLeft) {
+      emptyStackError
+    } else {
+      Right(stack.pop())
+    }
   }
 }

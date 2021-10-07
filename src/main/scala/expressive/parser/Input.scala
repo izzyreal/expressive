@@ -42,48 +42,58 @@ class Input(val expression: String) {
     } else {
       var c = expression(pos)
 
-      while (c == ' ' || c == ',') {
-        pos += 1
-        c = expression(pos)
+      var end = false
+
+      while (c == ' ' || c == ',' && !end) {
+        if (pos + 1 >= expression.length) {
+          end = true
+        } else {
+          pos += 1
+          c = expression(pos)
+        }
       }
 
-      if (c == '=') {
-        Equals
-      } else if (c.isLetter) {
-        val adjacent = adjacentLetters
-        pos += adjacent.length
-        Identifier(adjacent.prepended(c), negative = false)
-      } else if (c.isDigit) {
-        val adjacent = adjacentDigits
-        pos += adjacent.length
-        Number(adjacent.prepended(c).toDouble)
-      } else if (c == '(') {
-        Open
-      } else if (c == ')') {
-        Close
-      } else if (c == '/') {
-        Divide
-      } else if (c == '*') {
-        Multiply
-      } else if (c == '+') {
-        Plus
-      } else if (c == '-') {
-        if (pos + 1 < expression.length) {
-          val c2 = expression(pos + 1)
-          if (c2.isDigit) {
-            pos += 1
-            val adjacent = adjacentDigits
-            pos += adjacent.length
-            Number(-1 * adjacent.prepended(c2).toDouble)
-          } else if (c2.isLetter) {
-            pos += 1
-            val adjacent = adjacentLetters
-            pos += adjacent.length
-            Identifier(adjacent.prepended(c2), negative = true)
-          } else Minus
-        } else Minus
+      if (end) {
+        End
       } else {
-        Unknown
+        if (c == '=') {
+          Equals
+        } else if (c.isLetter) {
+          val adjacent = adjacentLetters
+          pos += adjacent.length
+          Identifier(adjacent.prepended(c), negative = false)
+        } else if (c.isDigit) {
+          val adjacent = adjacentDigits
+          pos += adjacent.length
+          Number(adjacent.prepended(c).toDouble)
+        } else if (c == '(') {
+          Open
+        } else if (c == ')') {
+          Close
+        } else if (c == '/') {
+          Divide
+        } else if (c == '*') {
+          Multiply
+        } else if (c == '+') {
+          Plus
+        } else if (c == '-') {
+          if (pos + 1 < expression.length) {
+            val c2 = expression(pos + 1)
+            if (c2.isDigit) {
+              pos += 1
+              val adjacent = adjacentDigits
+              pos += adjacent.length
+              Number(-1 * adjacent.prepended(c2).toDouble)
+            } else if (c2.isLetter) {
+              pos += 1
+              val adjacent = adjacentLetters
+              pos += adjacent.length
+              Identifier(adjacent.prepended(c2), negative = true)
+            } else Minus
+          } else Minus
+        } else {
+          Unknown
+        }
       }
     }
   }
