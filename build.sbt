@@ -1,7 +1,7 @@
 name := "expressive"
 
-version := "0.1"
+version := "1.0"
 
 scalaVersion := "2.13.6"
 
-idePackagePrefix := Some("expressive")
+Compile / run / mainClass := Some("expressive.Main")
